@@ -4,11 +4,11 @@ import { shareReplay } from 'rxjs/operators';
 
 @Injectable()
 export class StepperStep {
-  private readonly _previous$ = new BehaviorSubject<StepperStep | null>(null);
-  public readonly previous$ = this._previous$.asObservable();
+  private readonly _isFirstStep$ = new BehaviorSubject<boolean>(false);
+  public readonly isFirstStep$ = this._isFirstStep$.asObservable().pipe(shareReplay(1));
 
-  private readonly _next$ = new BehaviorSubject<StepperStep | null>(null);
-  public readonly next$ = this._next$.asObservable().pipe(shareReplay(1));
+  private readonly _isLastStep$ = new BehaviorSubject<boolean>(false);
+  public readonly isLastStep$ = this._isLastStep$.asObservable().pipe(shareReplay(1));
 
   private readonly _label$ = new BehaviorSubject<string>('');
   public readonly label$ = this._label$.asObservable().pipe(shareReplay(1));
@@ -17,10 +17,13 @@ export class StepperStep {
   public readonly visited$ = this._visited$.asObservable().pipe(shareReplay(1));
 
   private readonly _oneBasedIndex$ = new BehaviorSubject<number>(-1);
-  public readonly oneBasedIndex$ = this._oneBasedIndex$.asObservable().pipe(shareReplay(1));
+  public readonly oneBasedIndex$ = this._oneBasedIndex$.asObservable();
 
   private readonly _valid$ = new BehaviorSubject(true);
   public readonly valid$ = this._valid$.asObservable().pipe(shareReplay(1));
+
+  private readonly _active$ = new BehaviorSubject(false);
+  public readonly active$ = this._active$.asObservable().pipe(shareReplay(1));
 
   public setLabel(label: string): void {
     this._label$.next(label);
@@ -38,12 +41,12 @@ export class StepperStep {
     return this._visited$.value;
   }
 
-  public setPreviousStep(nextStep: StepperStep | null): void {
-    this._previous$.next(nextStep);
+  public setIsFirstStep(value: boolean): void {
+    this._isFirstStep$.next(value);
   }
 
-  public setNextStep(nextStep: StepperStep | null): void {
-    this._next$.next(nextStep);
+  public setISLastStep(value: boolean): void {
+    this._isLastStep$.next(value);
   }
 
   public setOneBasedIndex(index: number): void {
@@ -60,5 +63,14 @@ export class StepperStep {
 
   public getValidSnapshot(): boolean {
     return this._valid$.value;
+  }
+
+  public setActive(active: boolean): void {
+    this._active$.next(active);
+    if (active) this._visited$.next(true);
+  }
+
+  public getActiveSnapshot(): boolean {
+    return this._active$.value;
   }
 }

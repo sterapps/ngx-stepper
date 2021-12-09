@@ -2,7 +2,9 @@ import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChildren, 
 import { Stepper } from '../../services/stepper/stepper.service';
 import { StepperStepComponent } from '../stepper-step/stepper-step.component';
 import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
-import { Subject } from 'rxjs';
+import { startWith, Subject, tap } from 'rxjs';
+import { map, takeUntil } from 'rxjs/operators';
+import { StepperStep } from '../../services/stepper-step/stepper-step.service';
 
 @Component({
   selector: 'ngx-stepper',
@@ -31,11 +33,16 @@ export class StepperComponent extends Stepper implements AfterContentInit, OnDes
   }
 
   public ngAfterContentInit(): void {
-    if (this.steps) {
-      this.steps.forEach((step: StepperStepComponent) => {
-        this.addStep(step);
-      });
-    }
+    this.steps!.changes.pipe(
+      startWith(this.steps),
+      takeUntil(this.destroyAction$),
+      map(steps => steps.toArray()),
+      tap((steps: StepperStep[]) => {
+        setTimeout(() => {
+          this.updateSteps(steps);
+        }, 0);
+      })
+    ).subscribe();
   }
 
   public ngOnDestroy(): void {

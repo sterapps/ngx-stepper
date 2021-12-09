@@ -1,98 +1,79 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, NEVER, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { StepperStep } from '../stepper-step/stepper-step.service';
-import { shareReplay, switchMap, take, takeUntil, tap } from 'rxjs/operators';
-import { filterEmpty } from '../../utils/operator-functions';
+import { map, switchMap, take, takeUntil, tap } from 'rxjs/operators';
 
 @Injectable()
 export abstract class Stepper implements OnDestroy {
-  private readonly _firstStep$ = new BehaviorSubject<StepperStep | null>(null);
-  private readonly _lastStep$ = new BehaviorSubject<StepperStep | null>(null);
+  private readonly _steps$ = new BehaviorSubject<StepperStep[]>([]);
+  public readonly steps$ = this._steps$.asObservable();
 
-  private readonly _activeStep$ = new BehaviorSubject<StepperStep | null>(null);
-  public readonly activeStep$: Observable<StepperStep | null> = this._activeStep$.asObservable().pipe(shareReplay(1));
-
-  private readonly _length$ = new BehaviorSubject<number>(0);
-  public readonly length$ = this._length$.asObservable().pipe(shareReplay(1));
+  public readonly activeStep$ = this._steps$.pipe(
+    map(steps => {
+      return steps.find(step => step.getActiveSnapshot());
+    })
+  );
 
   private readonly _previousAction = new Subject<void>();
   private readonly _nextAction = new Subject<void>();
   private readonly _navigateToAction = new Subject<StepperStep>();
   private readonly _destroyAction$ = new Subject<void>();
-  private readonly _stepsChangedAction$ = new Subject<void>();
 
   private readonly _previousHandler$ = this._previousAction.pipe(
-    switchMap(() => this._activeStep$.pipe(take(1))),
-    filterEmpty(),
-    switchMap(activeStep => {
-      return activeStep.previous$.pipe(
-        take(1),
-        tap(previousStep => {
-          if (previousStep === null) return;
-          activeStep.setVisited(true);
-          this._activeStep$.next(previousStep);
-        })
-      );
+    switchMap(() => this._steps$.pipe(take(1))),
+    map(steps => {
+      let previousStep = null;
+      for (const step of steps) {
+        if (step.getActiveSnapshot()) {
+          if (previousStep) {
+            step.setActive(false);
+            previousStep.setActive(true);
+          }
+          break;
+        }
+        previousStep = step;
+      }
     })
   );
 
   private readonly _nextHandler$ = this._nextAction.pipe(
-    switchMap(() => this._activeStep$.pipe(take(1))),
-    filterEmpty(),
-    switchMap(activeStep =>
-      activeStep.valid$.pipe(
-        take(1),
-        switchMap(valid => {
-          if (!valid) return NEVER;
-          return activeStep.next$.pipe(
-            take(1),
-            tap(nextStep => {
-              if (nextStep === null) return;
-              nextStep.setVisited(true);
-              this._activeStep$.next(nextStep);
-            })
-          );
-        })
-      )
-    )
+    switchMap(() => this._steps$.pipe(take(1))),
+    map(steps => {
+      const activeStepIndex = steps.findIndex(step => step.getActiveSnapshot());
+      if (activeStepIndex === -1) return;
+
+      const activeStep = steps[activeStepIndex];
+      if (!activeStep.getValidSnapshot()) return;
+
+      const nextIndex = activeStepIndex + 1;
+      const nextStep = steps[nextIndex] as StepperStep | undefined;
+      if (nextStep === undefined) return;
+
+      activeStep.setActive(false);
+      nextStep.setActive(true);
+    })
   );
 
   private readonly _navigateToHandler$ = this._navigateToAction.pipe(
-    switchMap(step => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const activeStep = this._activeStep$.value!;
-      if (!activeStep.getValidSnapshot() && activeStep.getOneBasedIndexSnapshot() < step.getOneBasedIndexSnapshot()) return NEVER;
-      const visited = step.getVisitedSnapshot();
-      if (visited) {
-        // User can always navigate to previously visited steps
-        step.setVisited(true);
-        this._activeStep$.next(step);
-        return NEVER;
-      }
-      // If step was not visited it's in front of us.
-      // Because this is a linear stepper, only the next step can be now visited
-      return step.previous$.pipe(
-        take(1),
-        switchMap(previousStep => {
-          // This checks for the first step (it has no previous step)
-          // but the first step gets always handled in the if and not in this else (is by default visited)
-          if (previousStep === null) return NEVER;
+    switchMap(targetStep => {
+      return this._steps$.pipe(
+        tap(steps => {
+          const activeStep = steps.find(step => step.getActiveSnapshot());
 
-          // Handles steps that are after a visited step, that is also completed
-          return previousStep.visited$.pipe(
-            take(1),
-            switchMap(visited => {
-              return previousStep.valid$.pipe(
-                take(1),
-                tap(valid => {
-                  if (visited && valid) {
-                    step.setVisited(true);
-                    this._activeStep$.next(step);
-                  }
-                })
-              );
-            })
-          );
+          for (const s of steps) {
+            if (s !== targetStep) {
+              if (s.getValidSnapshot() && s.getVisitedSnapshot()) {
+              } else {
+                break;
+              }
+            } else if (s === activeStep) {
+              break;
+            } else {
+              activeStep!.setActive(false);
+              targetStep.setActive(true);
+              break;
+            }
+          }
         })
       );
     })
@@ -116,22 +97,25 @@ export abstract class Stepper implements OnDestroy {
     this._navigateToAction.next(step);
   }
 
-  public addStep(step: StepperStep): void {
-    if (this._firstStep$.value === null) {
-      this._firstStep$.next(step);
-      this._lastStep$.next(step);
-      this._activeStep$.next(step);
-      step.setVisited(true);
-      step.setOneBasedIndex(1);
-    } else if (this._lastStep$.value !== null) {
-      const currentLastStep = this._lastStep$.value;
-      currentLastStep.setNextStep(step);
-      step.setPreviousStep(currentLastStep);
-      step.setOneBasedIndex(currentLastStep.getOneBasedIndexSnapshot() + 1);
-      this._lastStep$.next(step);
+  public updateSteps(steps: StepperStep[]): void {
+    if (steps.length === 0) return;
+
+    steps[0].setIsFirstStep(true);
+    steps[steps.length - 1].setISLastStep(true);
+
+    // Update index of steps
+    let counter = 1;
+    steps.forEach(step => {
+      step.setOneBasedIndex(counter);
+      counter++;
+    });
+
+    // On init, set the first step as active
+    if (this._steps$.value.length === 0) {
+      steps[0].setActive(true);
     }
-    this._length$.next(this._length$.value + 1);
-    this._stepsChangedAction$.next();
+
+    this._steps$.next(steps);
   }
 
   public ngOnDestroy(): void {
