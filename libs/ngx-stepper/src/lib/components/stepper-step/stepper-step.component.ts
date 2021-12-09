@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { StepperStep } from '../../services/stepper-step/stepper-step.service';
 import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
-import { StepperComponent } from '../stepper/stepper.component';
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Stepper } from '../../services/stepper/stepper.service';
 
 @Component({
   selector: 'ngx-stepper-step',
@@ -30,7 +30,7 @@ export class StepperStepComponent extends StepperStep {
     this.setValid(valid);
   }
 
-  public constructor(public readonly stepperSettings: StepperSettings, public readonly stepper: StepperComponent) {
+  public constructor(public readonly stepperSettings: StepperSettings, public readonly stepper: Stepper) {
     super();
   }
 }

@@ -9,7 +9,7 @@ import { Subject } from 'rxjs';
   templateUrl: './stepper.component.html',
   styleUrls: ['./stepper.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [{ provide: Stepper, useClass: StepperComponent }, StepperSettings],
+  providers: [{ provide: Stepper, useExisting: StepperComponent }, StepperSettings],
 })
 export class StepperComponent extends Stepper implements AfterContentInit, OnDestroy {
   @ContentChildren(StepperStepComponent) private readonly steps: QueryList<StepperStepComponent> | undefined;
