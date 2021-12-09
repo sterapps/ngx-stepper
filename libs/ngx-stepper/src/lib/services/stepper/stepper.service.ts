@@ -108,17 +108,13 @@ export abstract class Stepper implements OnDestroy {
 
     steps.splice(index, 0, step);
 
-    steps.forEach(s => s.setISLastStep(false));
-    steps.forEach(s => s.setISLastStep(false));
-    steps[0].setIsFirstStep(true);
-    steps[steps.length - 1].setISLastStep(true);
-
     // On init, set the first step as active
     if (isFirstTime) {
       steps[0].setActive(true);
     }
 
     Stepper.updateIndexesOfSteps(steps);
+    Stepper.updateFirstAndLastSteps(steps);
 
     this._steps$.next(steps);
   }
@@ -143,6 +139,7 @@ export abstract class Stepper implements OnDestroy {
     steps.splice(index, 1);
 
     Stepper.updateIndexesOfSteps(steps);
+    Stepper.updateFirstAndLastSteps(steps);
 
     this._steps$.next(steps);
   }
@@ -150,6 +147,13 @@ export abstract class Stepper implements OnDestroy {
   private static updateIndexesOfSteps(steps: StepperStep[]): void {
     steps.forEach((s, i) => {
       s.setOneBasedIndex(i + 1);
+    });
+  }
+
+  private static updateFirstAndLastSteps(steps: StepperStep[]): void {
+    steps.forEach((s, i) => {
+      s.setIsFirstStep(i === 0);
+      s.setISLastStep(i === steps.length - 1);
     });
   }
 }
