@@ -7,56 +7,25 @@
       <button (click)="stepper1.next()">Continue</button>
     </div>
   </ngx-stepper-step>
-  <ngx-stepper-step label="Second step" [valid]="stepValid">
+  <ngx-stepper-step label="Second step" *ngIf="visible">
     <div class="content">
       Step valid:
-      <input type="checkbox" [(ngModel)]="stepValid" />
       <button (click)="stepper1.previous()">Back</button>
       <button (click)="stepper1.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
-  <ngx-stepper-step label="Third step" *ngIf="visible">
-    <div class="content">
-      Third step content
-      <button (click)="stepper1.previous()">Back</button>
-      <button (click)="stepper1.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
-  <ngx-stepper-step label="Forth step">
-    <div class="content">
-      Forth step content
-      <button (click)="stepper1.previous()">Back</button>
-      <button (click)="stepper1.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
-</ngx-stepper>
-<h1>Stepper 2</h1>
-<ngx-stepper [stepConnectionLine]="false" #stepper2>
-  <ngx-stepper-step label="First step">
-    <div class="content">
-      First step content
-      <button (click)="stepper2.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
-  <ngx-stepper-step label="Second step">
-    <div class="content">
-      Second step content
-      <button (click)="stepper2.previous()">Back</button>
-      <button (click)="stepper2.next()">Continue</button>
     </div>
   </ngx-stepper-step>
   <ngx-stepper-step label="Third step">
     <div class="content">
       Third step content
-      <button (click)="stepper2.previous()">Back</button>
-      <button (click)="stepper2.next()">Continue</button>
+      <button (click)="stepper1.previous()">Back</button>
+      <button (click)="stepper1.next()">Continue</button>
     </div>
   </ngx-stepper-step>
   <ngx-stepper-step label="Forth step">
     <div class="content">
       Forth step content
-      <button (click)="stepper2.previous()">Back</button>
-      <button (click)="stepper2.next()">Continue</button>
+      <button (click)="stepper1.previous()">Back</button>
+      <button (click)="stepper1.next()">Continue</button>
     </div>
   </ngx-stepper-step>
 </ngx-stepper>

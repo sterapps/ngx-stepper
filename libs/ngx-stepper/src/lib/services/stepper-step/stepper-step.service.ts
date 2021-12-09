@@ -1,9 +1,12 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
+import { Stepper } from '../stepper/stepper.service';
 
 @Injectable()
-export class StepperStep {
+export class StepperStep implements OnDestroy {
+  public constructor(protected stepper: Stepper) {}
+
   private readonly _isFirstStep$ = new BehaviorSubject<boolean>(false);
   public readonly isFirstStep$ = this._isFirstStep$.asObservable().pipe(shareReplay(1));
 
@@ -72,5 +75,9 @@ export class StepperStep {
 
   public getActiveSnapshot(): boolean {
     return this._active$.value;
+  }
+
+  public ngOnDestroy(): void {
+    this.stepper.removeStep(this);
   }
 }

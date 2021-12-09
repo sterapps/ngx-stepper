@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit } from '@angular/core';
 import { StepperStep } from '../../services/stepper-step/stepper-step.service';
 import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -19,7 +19,7 @@ import { Stepper } from '../../services/stepper/stepper.service';
     ]),
   ],
 })
-export class StepperStepComponent extends StepperStep {
+export class StepperStepComponent extends StepperStep implements OnInit {
   @Input()
   public set label(label: string) {
     this.setLabel(label);
@@ -30,7 +30,18 @@ export class StepperStepComponent extends StepperStep {
     this.setValid(valid);
   }
 
-  public constructor(public readonly stepperSettings: StepperSettings, public readonly stepper: Stepper) {
-    super();
+  public constructor(
+    public readonly stepperSettings: StepperSettings,
+    public readonly stepper: Stepper,
+    protected readonly elementRef: ElementRef
+  ) {
+    super(stepper);
+  }
+
+  public ngOnInit(): void {
+    /* The order of ngOnInit is not guaranteed. Therefore, we need to get the
+    actual index of the step and provide it to the stepper */
+    const index = [...this.elementRef.nativeElement.parentElement.children].findIndex(x => x === this.elementRef.nativeElement);
+    this.stepper.addStep(this, index);
   }
 }

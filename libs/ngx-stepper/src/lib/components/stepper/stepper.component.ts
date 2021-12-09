@@ -1,10 +1,8 @@
-import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChildren, Input, OnDestroy, QueryList } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChildren, Input, OnDestroy, QueryList } from '@angular/core';
 import { Stepper } from '../../services/stepper/stepper.service';
 import { StepperStepComponent } from '../stepper-step/stepper-step.component';
 import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
 import { Subject } from 'rxjs';
-import { map, startWith, takeUntil, tap } from 'rxjs/operators';
-import { StepperStep } from '../../services/stepper-step/stepper-step.service';
 
 @Component({
   selector: 'ngx-stepper',
@@ -13,7 +11,7 @@ import { StepperStep } from '../../services/stepper-step/stepper-step.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: Stepper, useExisting: StepperComponent }, StepperSettings],
 })
-export class StepperComponent extends Stepper implements AfterContentInit, OnDestroy {
+export class StepperComponent extends Stepper implements OnDestroy {
   @ContentChildren(StepperStepComponent) private readonly steps: QueryList<StepperStepComponent> | undefined;
 
   @Input()
@@ -30,19 +28,6 @@ export class StepperComponent extends Stepper implements AfterContentInit, OnDes
 
   public constructor(private readonly stepperSettings: StepperSettings) {
     super();
-  }
-
-  public ngAfterContentInit(): void {
-    this.steps!.changes.pipe(
-      startWith(this.steps),
-      takeUntil(this.destroyAction$),
-      map(steps => steps.toArray()),
-      tap((steps: StepperStep[]) => {
-        setTimeout(() => {
-          this.updateSteps(steps);
-        }, 0);
-      })
-    ).subscribe();
   }
 
   public ngOnDestroy(): void {

@@ -97,29 +97,47 @@ export abstract class Stepper implements OnDestroy {
     this._navigateToAction.next(step);
   }
 
-  public updateSteps(steps: StepperStep[]): void {
-    if (steps.length === 0) return;
+  public ngOnDestroy(): void {
+    this._destroyAction$.next();
+    this._destroyAction$.complete();
+  }
 
+  public addStep(step: StepperStep, index: number): void {
+    const steps = this._steps$.value;
+    const isFirstTime = steps.length === 0;
+
+    steps.splice(index, 0, step);
+
+    steps.forEach(s => s.setISLastStep(false));
+    steps.forEach(s => s.setISLastStep(false));
     steps[0].setIsFirstStep(true);
     steps[steps.length - 1].setISLastStep(true);
 
-    // Update index of steps
-    let counter = 1;
-    steps.forEach(step => {
-      step.setOneBasedIndex(counter);
-      counter++;
-    });
-
     // On init, set the first step as active
-    if (this._steps$.value.length === 0) {
+    if (isFirstTime) {
       steps[0].setActive(true);
     }
+
+    Stepper.updateIndexesOfSteps(steps);
 
     this._steps$.next(steps);
   }
 
-  public ngOnDestroy(): void {
-    this._destroyAction$.next();
-    this._destroyAction$.complete();
+  public removeStep(step: StepperStep): void {
+    const steps = this._steps$.value;
+    const index = steps.indexOf(step);
+    if (index === -1) return;
+
+    steps.splice(index, 1);
+
+    Stepper.updateIndexesOfSteps(steps);
+
+    this._steps$.next(steps);
+  }
+
+  private static updateIndexesOfSteps(steps: StepperStep[]): void {
+    steps.forEach((s, i) => {
+      s.setOneBasedIndex(i + 1);
+    });
   }
 }
