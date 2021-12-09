@@ -2,8 +2,8 @@ import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChildren, 
 import { Stepper } from '../../services/stepper/stepper.service';
 import { StepperStepComponent } from '../stepper-step/stepper-step.component';
 import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
-import { Subject, tap } from 'rxjs';
-import { map, startWith, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { map, startWith, takeUntil, tap } from 'rxjs/operators';
 import { StepperStep } from '../../services/stepper-step/stepper-step.service';
 
 @Component({
