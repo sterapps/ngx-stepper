@@ -127,7 +127,19 @@ export abstract class Stepper implements OnDestroy {
     const steps = this._steps$.value;
     const index = steps.indexOf(step);
     if (index === -1) return;
-
+    // If the step is active, we need to set the next step as active (previous as fallback)
+    if (step.getActiveSnapshot()) {
+      step.setActive(false);
+      const nextStep = steps[index + 1] as StepperStep | undefined;
+      if (nextStep) {
+        nextStep.setActive(true);
+      } else {
+        const previousStep = steps[index - 1] as StepperStep | undefined;
+        if (previousStep) {
+          previousStep.setActive(true);
+        }
+      }
+    }
     steps.splice(index, 1);
 
     Stepper.updateIndexesOfSteps(steps);
