@@ -91,6 +91,48 @@
         }
       },
       "tags": []
+    },
+    "npx-stepper": {
+      "projectType": "library",
+      "root": "libs/npx-stepper",
+      "sourceRoot": "libs/npx-stepper/src",
+      "prefix": "npx",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "outputs": ["dist/libs/npx-stepper"],
+          "options": {
+            "project": "libs/npx-stepper/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/npx-stepper/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/npx-stepper/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/npx-stepper"],
+          "options": {
+            "jestConfig": "libs/npx-stepper/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/npx-stepper/src/**/*.ts",
+              "libs/npx-stepper/src/**/*.html"
+            ]
+          }
+        }
+      },
+      "tags": []
     }
   }
 }

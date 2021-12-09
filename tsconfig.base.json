@@ -14,7 +14,9 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@valentingavran/npx-stepper": ["libs/npx-stepper/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
