@@ -1,5 +1,5 @@
 module.exports = {
-  displayName: 'npx-stepper',
+  displayName: 'ngx-stepper',
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
@@ -8,7 +8,7 @@ module.exports = {
       stringifyContentPathRegex: '\\.(html|svg)$',
     },
   },
-  coverageDirectory: '../../coverage/libs/npx-stepper',
+  coverageDirectory: '../../coverage/libs/ngx-stepper',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': 'jest-preset-angular',
   },

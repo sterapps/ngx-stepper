@@ -1,0 +1,6 @@
+<div class="prepend-item">
+  <div *ngIf="topStepConnectionLineVisible$ | async" class="step-connection-line top"></div>
+  <div *ngIf="bottomStepConnectionLineVisible$ | async" class="step-connection-line bottom"></div>
+  <div class="step-indicator">{{ step.oneBasedIndex$ | async }}</div>
+</div>
+<div class="label">{{ step.label$ | async }}</div>

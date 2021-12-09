@@ -10,7 +10,7 @@
     "test": "nx test",
     "lint": "nx run-many --all --target=lint"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@angular/animations": "^13.0.0",
     "@angular/common": "^13.0.0",

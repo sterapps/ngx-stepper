@@ -1,0 +1,9 @@
+<ngx-stepper-header></ngx-stepper-header>
+<div *ngIf="(stepper.activeStep$ | async) === this" class="step-content-container" [@verticalStepAnimation]="">
+  <div *ngIf="stepperSettings.hasStepConnectionLine$ | async" class="line-container">
+    <div *ngIf="(next$ | async) !== null" class="line"></div>
+  </div>
+  <div class="content">
+    <ng-content></ng-content>
+  </div>
+</div>

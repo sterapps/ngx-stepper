@@ -92,33 +92,33 @@
       },
       "tags": []
     },
-    "npx-stepper": {
+    "ngx-stepper": {
       "projectType": "library",
-      "root": "libs/npx-stepper",
-      "sourceRoot": "libs/npx-stepper/src",
-      "prefix": "npx",
+      "root": "libs/ngx-stepper",
+      "sourceRoot": "libs/ngx-stepper/src",
+      "prefix": "ngx",
       "architect": {
         "build": {
           "builder": "@nrwl/angular:package",
-          "outputs": ["dist/libs/npx-stepper"],
+          "outputs": ["dist/libs/ngx-stepper"],
           "options": {
-            "project": "libs/npx-stepper/ng-package.json"
+            "project": "libs/ngx-stepper/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "libs/npx-stepper/tsconfig.lib.prod.json"
+              "tsConfig": "libs/ngx-stepper/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "libs/npx-stepper/tsconfig.lib.json"
+              "tsConfig": "libs/ngx-stepper/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/npx-stepper"],
+          "outputs": ["coverage/libs/ngx-stepper"],
           "options": {
-            "jestConfig": "libs/npx-stepper/jest.config.js",
+            "jestConfig": "libs/ngx-stepper/jest.config.js",
             "passWithNoTests": true
           }
         },
@@ -126,8 +126,8 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
-              "libs/npx-stepper/src/**/*.ts",
-              "libs/npx-stepper/src/**/*.html"
+              "libs/ngx-stepper/src/**/*.ts",
+              "libs/ngx-stepper/src/**/*.html"
             ]
           }
         }
