@@ -8,12 +8,7 @@ import { NgxStepperModule } from '@valentingavran/ngx-stepper';
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    NgxStepperModule,
-    FormsModule,
-  ],
+  imports: [BrowserModule, BrowserAnimationsModule, NgxStepperModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent],
 })

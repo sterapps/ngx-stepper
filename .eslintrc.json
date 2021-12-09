@@ -1,35 +1,17 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx"],
+  "ignorePatterns": ["!**/*"],
   "overrides": [
     {
-      "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {
-        "@nrwl/nx/enforce-module-boundaries": [
-          "error",
-          {
-            "enforceBuildableLibDependency": true,
-            "allow": [],
-            "depConstraints": [
-              {
-                "sourceTag": "*",
-                "onlyDependOnLibsWithTags": ["*"]
-              }
-            ]
-          }
-        ]
-      }
+      "files": ["*.ts"],
+      "extends": ["@anexia/eslint-config-marine/prettier/node", "@anexia/eslint-config-marine/prettier/angular"]
     },
     {
-      "files": ["*.ts", "*.tsx"],
-      "extends": ["plugin:@nrwl/nx/typescript"],
-      "rules": {}
-    },
-    {
-      "files": ["*.js", "*.jsx"],
-      "extends": ["plugin:@nrwl/nx/javascript"],
-      "rules": {}
+      "files": ["*.html"],
+      "extends": ["@anexia/eslint-config-marine/prettier/angular"]
     }
-  ]
+  ],
+  "rules": {
+    "prettier/prettier": [2, {}, { "usePrettierrc": true }]
+  }
 }
