@@ -19,6 +19,12 @@ export abstract class Stepper implements OnDestroy {
   private readonly _navigateToAction = new Subject<StepperStep>();
   private readonly _destroyAction$ = new Subject<void>();
 
+  private readonly _onPrevious$ = new Subject<void>();
+  public readonly onPrevious$ = this._onPrevious$.asObservable();
+
+  private readonly _onNext$ = new Subject<void>();
+  public readonly onNext$ = this._onNext$.asObservable();
+
   private readonly _previousHandler$ = this._previousAction.pipe(
     switchMap(() => this._steps$.pipe(take(1))),
     map(steps => {
@@ -28,6 +34,7 @@ export abstract class Stepper implements OnDestroy {
           if (previousStep) {
             step.setActive(false);
             previousStep.setActive(true);
+            this._onPrevious$.next();
           }
           break;
         }
@@ -51,14 +58,19 @@ export abstract class Stepper implements OnDestroy {
 
       activeStep.setActive(false);
       nextStep.setActive(true);
+      this._onNext$.next();
     })
   );
 
   private readonly _navigateToHandler$ = this._navigateToAction.pipe(
     switchMap(targetStep => {
       return this._steps$.pipe(
+        take(1),
         tap(steps => {
-          const activeStep = steps.find(step => step.getActiveSnapshot());
+          const currentlyActiveStepIndex = steps.findIndex(step => step.getActiveSnapshot());
+          const currentlyActiveStep = steps.find(step => step.getActiveSnapshot());
+
+          const targetStepIndex = steps.findIndex(step => step === targetStep);
 
           for (const s of steps) {
             if (s !== targetStep) {
@@ -66,11 +78,17 @@ export abstract class Stepper implements OnDestroy {
               } else {
                 break;
               }
-            } else if (s === activeStep) {
+            } else if (s === currentlyActiveStep) {
               break;
             } else {
-              activeStep!.setActive(false);
+              currentlyActiveStep!.setActive(false);
               targetStep.setActive(true);
+              if (targetStepIndex > currentlyActiveStepIndex) {
+                this._onNext$.next();
+              }
+              if (targetStepIndex === currentlyActiveStepIndex - 1) {
+                this._onPrevious$.next();
+              }
               break;
             }
           }

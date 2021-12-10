@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ContentChildren, Input, OnDestroy, QueryList } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChildren, Input, OnDestroy, Output, QueryList } from '@angular/core';
 import { Stepper } from '../../services/stepper/stepper.service';
 import { StepperStepComponent } from '../stepper-step/stepper-step.component';
 import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
@@ -23,6 +23,12 @@ export class StepperComponent extends Stepper implements OnDestroy {
   public set headerNavigation(value: boolean) {
     this.stepperSettings.headerNavigationEnabled$.next(value);
   }
+
+  // eslint-disable-next-line @angular-eslint/no-output-on-prefix
+  @Output() public readonly onPrevious = this.onPrevious$;
+
+  // eslint-disable-next-line @angular-eslint/no-output-on-prefix
+  @Output() public readonly onNext = this.onNext$;
 
   private readonly destroyAction$ = new Subject<void>();
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, Output } from '@angular/core';
 import { StepperStep } from '../../services/stepper-step/stepper-step.service';
 import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
 import { animate, state, style, transition, trigger } from '@angular/animations';
@@ -20,6 +20,9 @@ import { Stepper } from '../../services/stepper/stepper.service';
   ],
 })
 export class StepperStepComponent extends StepperStep implements OnInit {
+  // eslint-disable-next-line @angular-eslint/no-output-on-prefix
+  @Output() public onActiveStateChange = this.active$;
+
   @Input()
   public set label(label: string) {
     this.setLabel(label);

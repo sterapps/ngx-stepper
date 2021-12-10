@@ -1,29 +1,26 @@
 <h1>Stepper 1</h1>
 <button (click)="visible = !visible">Toggle step 3</button>
-<ngx-stepper #stepper1>
+<ngx-stepper #stepper1 (onNext)="onNext()" (onPrevious)="onPrevious()">
   <ngx-stepper-step label="First step">
     <div class="content">
       First step content
       <button (click)="stepper1.next()">Continue</button>
     </div>
   </ngx-stepper-step>
-  <ngx-stepper-step label="Second step" *ngIf="visible">
+  <ngx-stepper-step label="Second step">
     <div class="content">
-      Step valid:
       <button (click)="stepper1.previous()">Back</button>
       <button (click)="stepper1.next()">Continue</button>
     </div>
   </ngx-stepper-step>
-  <ngx-stepper-step label="Third step">
+  <ngx-stepper-step label="Third step" *ngIf="visible">
     <div class="content">
-      Third step content
       <button (click)="stepper1.previous()">Back</button>
       <button (click)="stepper1.next()">Continue</button>
     </div>
   </ngx-stepper-step>
-  <ngx-stepper-step label="Forth step">
+  <ngx-stepper-step label="Fourth step" *ngIf="visible" (onActiveStateChange)="onActiveStateChange($event)">
     <div class="content">
-      Forth step content
       <button (click)="stepper1.previous()">Back</button>
       <button (click)="stepper1.next()">Continue</button>
     </div>

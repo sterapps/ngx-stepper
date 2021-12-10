@@ -11,7 +11,7 @@ export class StepperStep implements OnDestroy {
   public readonly isFirstStep$ = this._isFirstStep$.asObservable().pipe(shareReplay(1));
 
   private readonly _isLastStep$ = new BehaviorSubject<boolean>(false);
-  public readonly isLastStep$ = this._isLastStep$.asObservable().pipe(shareReplay(1));
+  public readonly isLastStep$ = this._isLastStep$.asObservable();
 
   private readonly _label$ = new BehaviorSubject<string>('');
   public readonly label$ = this._label$.asObservable().pipe(shareReplay(1));
