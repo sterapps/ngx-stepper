@@ -1,28 +1,16 @@
-<h1>Stepper 1</h1>
-<button (click)="visible = !visible">Toggle step 3</button>
-<ngx-stepper #stepper1 (onNext)="onNext()" (onPrevious)="onPrevious()">
-  <ngx-stepper-step label="First step">
-    <div class="content">
-      First step content
-      <button (click)="stepper1.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
-  <ngx-stepper-step label="Second step">
-    <div class="content">
-      <button (click)="stepper1.previous()">Back</button>
-      <button (click)="stepper1.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
-  <ngx-stepper-step label="Third step" *ngIf="visible">
-    <div class="content">
-      <button (click)="stepper1.previous()">Back</button>
-      <button (click)="stepper1.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
-  <ngx-stepper-step label="Fourth step" *ngIf="visible" (onActiveStateChange)="onActiveStateChange($event)">
-    <div class="content">
-      <button (click)="stepper1.previous()">Back</button>
-      <button (click)="stepper1.next()">Continue</button>
-    </div>
-  </ngx-stepper-step>
+<ngx-stepper #stepper>
+  <ng-template ngxStep label="First step">
+    First step content
+    <button (click)="stepper.next()">Continue</button>
+  </ng-template>
+  <ng-template ngxStep label="Second step" [valid]="stepValid">
+    Valid:<input type="checkbox" [(ngModel)]="stepValid" /><br />
+    <button (click)="stepper.previous()">Back</button>
+    <button ngxStepperNext>Continue</button>
+  </ng-template>
+  <ng-template ngxStep label="Third step">
+    Third step content
+    <button ngxStepperPrevious>Back</button>
+    <button ngxStepperNext>Continue</button>
+  </ng-template>
 </ngx-stepper>

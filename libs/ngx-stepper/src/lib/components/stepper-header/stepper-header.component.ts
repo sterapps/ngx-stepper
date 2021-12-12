@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, OnDestroy } from '@angular/core';
-import { StepperStep } from '../../services/stepper-step/stepper-step.service';
+import { ChangeDetectionStrategy, Component, ContentChild, ElementRef, HostListener, Input, OnDestroy } from '@angular/core';
 import { distinctUntilChanged, map, takeUntil, tap } from 'rxjs/operators';
-import { combineLatest, Subject } from 'rxjs';
-import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
-import { Stepper } from '../../services/stepper/stepper.service';
+import { BehaviorSubject, combineLatest, Subject } from 'rxjs';
+import { NgxStepperSettings } from '../../services/stepper-settings/stepper-settings.service';
+import { NgxStepper } from '../../services/stepper/stepper.service';
+import { StepperVisitedIconDirective } from '../../directives/stepper-visited-icon/stepper-visited-icon.directive';
 
 @Component({
   selector: 'ngx-stepper-header',
@@ -12,32 +12,50 @@ import { Stepper } from '../../services/stepper/stepper.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StepperHeaderComponent implements OnDestroy {
+  @ContentChild(StepperVisitedIconDirective) public readonly stepperVisitedIcon!: StepperVisitedIconDirective;
+
+  @Input()
+  public set label(value: string | null) {
+    this.label$.next(value);
+  }
+
+  @Input() public visited = false;
+
+  @Input()
+  public set index(value: number) {
+    this.index$.next(value);
+  }
+
+  @Input()
+  public set isFirst(value: boolean) {
+    this.isFirst$.next(value);
+  }
+
+  @Input()
+  public set isLast(value: boolean) {
+    this.isLast$.next(value);
+  }
+
+  @Input()
+  public set active(value: boolean) {
+    this.active$.next(value);
+    value ? this.elementRef.nativeElement.classList.add('active') : this.elementRef.nativeElement.classList.remove('active');
+  }
+
   private readonly destroyAction$ = new Subject<void>();
 
-  public readonly topStepConnectionLineVisible$ = combineLatest([this.step.isFirstStep$, this.stepperSettings.hasStepConnectionLine$]).pipe(
+  public readonly label$ = new BehaviorSubject<string | null>(null);
+  public readonly index$ = new BehaviorSubject(0);
+  public readonly active$ = new BehaviorSubject(false);
+  private readonly isFirst$ = new BehaviorSubject(false);
+  private readonly isLast$ = new BehaviorSubject(false);
+
+  public readonly topStepConnectionLineVisible$ = combineLatest([this.isFirst$, this.stepperSettings.hasStepConnectionLine$]).pipe(
     map(([isFirstStep, hasStepConnectionLine]) => !isFirstStep && hasStepConnectionLine)
   );
 
-  public readonly bottomStepConnectionLineVisible$ = combineLatest([
-    this.step.isLastStep$,
-    this.stepperSettings.hasStepConnectionLine$,
-  ]).pipe(map(([isLastStep, hasStepConnectionLine]) => !isLastStep && hasStepConnectionLine));
-
-  public constructor(
-    private readonly elementRef: ElementRef,
-    private readonly stepper: Stepper,
-    private readonly stepperSettings: StepperSettings,
-    public readonly step: StepperStep
-  ) {
-    this.activeHandler$.pipe(takeUntil(this.destroyAction$)).subscribe();
-    this.headerNavigationEnabledHandler$.pipe(takeUntil(this.destroyAction$)).subscribe();
-  }
-
-  private readonly activeHandler$ = this.step.active$.pipe(
-    distinctUntilChanged(),
-    tap(active => {
-      active ? this.elementRef.nativeElement.classList.add('active') : this.elementRef.nativeElement.classList.remove('active');
-    })
+  public readonly bottomStepConnectionLineVisible$ = combineLatest([this.isLast$, this.stepperSettings.hasStepConnectionLine$]).pipe(
+    map(([isLastStep, hasStepConnectionLine]) => !isLastStep && hasStepConnectionLine)
   );
 
   private readonly headerNavigationEnabledHandler$ = this.stepperSettings.headerNavigationEnabled$.pipe(
@@ -47,6 +65,14 @@ export class StepperHeaderComponent implements OnDestroy {
     })
   );
 
+  public constructor(
+    private readonly elementRef: ElementRef,
+    private readonly stepper: NgxStepper,
+    private readonly stepperSettings: NgxStepperSettings
+  ) {
+    this.headerNavigationEnabledHandler$.pipe(takeUntil(this.destroyAction$)).subscribe();
+  }
+
   public ngOnDestroy(): void {
     this.destroyAction$.next();
     this.destroyAction$.complete();
@@ -54,8 +80,8 @@ export class StepperHeaderComponent implements OnDestroy {
 
   @HostListener('click')
   private navigate(): void {
-    if (this.stepperSettings.headerNavigationEnabled$.value) {
-      this.stepper.navigateTo(this.step);
+    if (this.stepperSettings.getHeaderNavigationEnabledSnapshot()) {
+      this.stepper.navigateTo(this.index$.value);
     }
   }
 }

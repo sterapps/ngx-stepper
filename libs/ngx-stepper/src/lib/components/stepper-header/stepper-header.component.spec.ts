@@ -1,9 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { StepperHeaderComponent } from './stepper-header.component';
-import { StepperSettings } from '../../services/stepper-settings/stepper-settings.service';
-import { StepperComponent } from '../stepper/stepper.component';
-import { StepperStep } from '../../services/stepper-step/stepper-step.service';
+import { NgxStepperSettings } from '../../services/stepper-settings/stepper-settings.service';
 import { BehaviorSubject } from 'rxjs';
 
 describe('StepperHeaderComponent', () => {
@@ -15,22 +13,10 @@ describe('StepperHeaderComponent', () => {
       declarations: [StepperHeaderComponent],
       providers: [
         {
-          provide: StepperSettings,
+          provide: NgxStepperSettings,
           useValue: {
             hasStepConnectionLine$: new BehaviorSubject(true),
             headerNavigationEnabled$: new BehaviorSubject(true),
-          },
-        },
-        {
-          provide: StepperComponent,
-          useValue: {
-            activeStep$: new BehaviorSubject<StepperStep | null>(null),
-          },
-        },
-        {
-          provide: StepperStep,
-          useValue: {
-            oneBasedIndex$: new BehaviorSubject(1),
           },
         },
       ],
