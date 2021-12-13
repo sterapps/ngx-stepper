@@ -1,25 +1,31 @@
 :host {
-  --header-height: 72px;
-  --prepend-item-size: 72px;
-  --step-indicator-color: #1867c0;
-  --step-indicator-size: 40%;
+  --header-height-internal: 72px;
   --step-connection-line-offset: 8px;
+  --step-connection-line-color: #e0e0e0;
+  --step-indicator-size: 40%;
+  --step-indicator-color-inactive: rgba(0, 0, 0, 0.38);
+  --step-indicator-color-active: #1867c0;
+  --step-indicator-transition: background var(--transition-duration) ease-out;
+  --step-indicator-font-size: 16px;
   --label-font-size: 16px;
+  --label-color-inactive: rgba(0, 0, 0, 0.38);
+  --label-color-active: rgba(0, 0, 0, 0.87);
   --transition-duration: 0.5s;
+
   display: flex;
   align-items: center;
-  height: var(--header-height);
+  height: var(--header-height-internal);
 
   &.active {
     .prepend-item {
       .step-indicator {
-        background: var(--step-indicator-color);
-        transition: background var(--transition-duration) ease-out;
+        background: var(--step-indicator-color-active);
+        transition: var(--step-indicator-transition, background var(--transition-duration) ease-out);
       }
     }
 
     .label {
-      color: rgba(0, 0, 0, 0.87);
+      color: var(--label-color-active);
       transition: color var(--transition-duration) ease-out;
     }
   }
@@ -33,8 +39,8 @@
     display: flex;
     flex-shrink: 0;
     flex-grow: 0;
-    flex-basis: var(--prepend-item-size);
-    height: var(--prepend-item-size);
+    flex-basis: var(--header-height-internal);
+    height: var(--header-height-internal);
     justify-content: center;
     align-items: center;
     position: relative;
@@ -45,9 +51,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: var(--label-font-size);
+      font-size: var(--step-indicator-font-size);
       border-radius: 50%;
-      background: rgba(0, 0, 0, 0.38);
+      background: var(--step-indicator-color-inactive);
       color: white;
       user-select: none;
       transition: background var(--transition-duration) ease-out;
@@ -57,13 +63,15 @@
         justify-content: center;
         align-items: center;
         padding: 5px;
+        max-height: var(--step-indicator-font-size);
+        max-width: var(--step-indicator-font-size);
       }
     }
 
     .step-connection-line {
       width: 100%;
       height: calc(((100% - var(--step-indicator-size)) / 2) - var(--step-connection-line-offset));
-      background: linear-gradient(#e0e0e0, #e0e0e0) no-repeat center/1px 100%;
+      background: linear-gradient(var(--step-connection-line-color), var(--step-connection-line-color)) no-repeat center/1px 100%;
       position: absolute;
 
       &.top {
@@ -82,7 +90,7 @@
     line-clamp: 2;
     user-select: none;
     font-size: var(--label-font-size);
-    color: rgba(0, 0, 0, 0.38);
+    color: var(--label-color-inactive);
     transition: color var(--transition-duration) ease-out;
     text-overflow: ellipsis;
     overflow: hidden;
