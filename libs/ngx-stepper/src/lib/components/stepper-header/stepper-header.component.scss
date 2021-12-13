@@ -5,12 +5,12 @@
   --step-indicator-size: 40%;
   --step-indicator-color-inactive: rgba(0, 0, 0, 0.38);
   --step-indicator-color-active: #1867c0;
-  --step-indicator-transition: background var(--transition-duration) ease-out;
+  --step-indicator-transition: background 500ms ease-out;
   --step-indicator-font-size: 16px;
   --label-font-size: 16px;
   --label-color-inactive: rgba(0, 0, 0, 0.38);
   --label-color-active: rgba(0, 0, 0, 0.87);
-  --transition-duration: 0.5s;
+  --label-transition: color 500ms ease-out;
 
   display: flex;
   align-items: center;
@@ -20,13 +20,13 @@
     .prepend-item {
       .step-indicator {
         background: var(--step-indicator-color-active);
-        transition: var(--step-indicator-transition, background var(--transition-duration) ease-out);
+        transition: var(--step-indicator-transition);
       }
     }
 
     .label {
       color: var(--label-color-active);
-      transition: color var(--transition-duration) ease-out;
+      transition: var(--label-transition);
     }
   }
 
@@ -56,7 +56,7 @@
       background: var(--step-indicator-color-inactive);
       color: white;
       user-select: none;
-      transition: background var(--transition-duration) ease-out;
+      transition: var(--step-indicator-transition);
 
       div {
         display: flex;
@@ -91,7 +91,7 @@
     user-select: none;
     font-size: var(--label-font-size);
     color: var(--label-color-inactive);
-    transition: color var(--transition-duration) ease-out;
+    transition: var(--label-transition);
     text-overflow: ellipsis;
     overflow: hidden;
   }
